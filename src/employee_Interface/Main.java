@@ -107,7 +107,7 @@ public class Main {
 		String para = ReadLine();
 		String sql = "Select * FROM Customers Where ";
 		switch(selection) {
-		case '1':
+		case '1':	// TODO: Maybe make it so you can search by partial id
 			while(!IsValidCustomerID(para))
 			{
 				System.out.println("Invalid customer id.");
@@ -119,6 +119,16 @@ public class Main {
 			break;
 		case '2':	// Do not need to check if the entered string is valid
 			sql += "Customers.Name LIKE \"%"+para+"%\";";
+			conn.ExecuteQuery(sql);
+			break;
+		case '3':	// TODO: Maybe make it so you can search by partial phone number
+			while(!IsValidPhoneNumber(para))
+			{
+				System.out.println("Invalid phone number.");
+				System.out.println("Please enter a phone number in the form of of 10 digits without dashes (i.e. 6143070417):");
+				para = ReadLine();
+			}
+			sql += "Customers.`Phone Number` = "+para+";";
 			conn.ExecuteQuery(sql);
 			break;
 		default:
@@ -139,6 +149,12 @@ public class Main {
 				return false;
 		}
 		return true;
+	}
+	
+	private static Boolean IsValidPhoneNumber(String number)
+	{
+		// Phone number constraints are the same as the customer id constraints so just check it with that
+		return IsValidCustomerID(number);
 	}
 	
 	private static void EnterProductState()
