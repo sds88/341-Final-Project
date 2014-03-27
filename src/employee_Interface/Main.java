@@ -103,6 +103,16 @@ public class Main {
 		System.out.println("4. Address (Street, City, State, ZIP).");
 		System.out.println("5. Back.");
 		char selection = ReadChar();
+		if(selection == '5')
+		{
+			state = State.HOME;
+			return;
+		} 
+		else if(selection < '1' || selection > '5')
+		{
+			System.out.println("Invalid selection.");
+			return;
+		}
 		System.out.println("Enter the search string:");
 		String para = ReadLine();
 		String sql = "Select * FROM Customers Where ";
@@ -131,6 +141,9 @@ public class Main {
 			sql += "Customers.`Phone Number` = "+para+";";
 			conn.ExecuteQuery(sql);
 			break;
+		case '4':
+			sql += "Customers.Address LIKE \"%"+para+"%\";";
+			conn.ExecuteQuery(sql);
 		default:
 			break;
 		}
