@@ -117,6 +117,10 @@ public class Main {
 			sql += "Customers.`Customer ID` = "+para+";";
 			conn.ExecuteQuery(sql);
 			break;
+		case '2':	// Do not need to check if the entered string is valid
+			sql += "Customers.Name LIKE \"%"+para+"%\";";
+			conn.ExecuteQuery(sql);
+			break;
 		default:
 			break;
 		}
