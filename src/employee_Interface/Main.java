@@ -211,7 +211,7 @@ public class Main {
 			conn.ExecuteQuery(sql);
 			break;
 		case '3':	// Do not need to check if the entered string is valid
-			sql += "Products.Brand LIKE \"%"+para+"\"%;";
+			sql += "Products.`Brand` LIKE \"%"+para+"%\";";
 			conn.ExecuteQuery(sql);
 			break;
 		case '4': // TODO: Maybe add the option to search for greater/less than a number
@@ -225,7 +225,7 @@ public class Main {
 			conn.ExecuteQuery(sql);
 			break;
 		case '5': // Do not need to check if the entered string is valid
-			sql += "Product.Categories LIKE \"%"+para+"%\";";
+			sql += "Products.`Categories` LIKE \"%"+para+"%\";";
 			conn.ExecuteQuery(sql);
 			break;
 		default:
