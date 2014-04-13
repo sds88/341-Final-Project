@@ -2,7 +2,13 @@ package employee_Interface;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.print.attribute.standard.DateTimeAtCompleted;
 
 public class Main {
 	public static MySQLConnection conn;
@@ -99,7 +105,35 @@ public class Main {
 	
 	private static void EnterOrderState()
 	{
-		
+		ClearConsole();
+		System.out.println("Enter the Store ID:\t");
+		String store = ReadLine();
+		// TODO: Make this customer name and have it search for ID
+		System.out.println("Enter the Customer ID:\t");
+		String customer = ReadLine();
+		String price = "0";
+		Date date = new Date();
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String datetime = format.format(date);
+		String sql = "INSERT INTO Orders (`Store ID`, `Customer ID`, `Total Price`, `Timestamp`)" +
+				"VALUES ("+store+","+customer+","+price+",\""+datetime+"\");";
+		String orderId = conn.CreateOrderWithQuery(sql);
+		System.out.println("Order #"+orderId+" created.  Begin order content additions:");
+		while(true)
+		{
+			System.out.println("Enter item UPC Code or \"done\" to finish the order:\t");
+			String upc = ReadLine();
+			if(upc.compareToIgnoreCase("done")==0)
+				break;
+			System.out.println("Enter amount of item "+upc+":\t");
+			String amount = ReadLine();
+			sql = "INSERT INTO Order_Content (`Order ID`, `UPC Code`, `Amount`) " +
+					"VALUES ("+orderId+","+upc+","+amount+");";
+			conn.ExecuteNonQuery(sql);
+		}
+		System.out.println("Order completed.  Press enter continue to the home screen.");
+		ReadChar();
+		state = State.HOME;
 	}
 	
 	private static void EnterCustomerLookupState()
@@ -182,13 +216,8 @@ public class Main {
 	private static void EnterCustomerAddState()
 	{
 		ClearConsole();
-		System.out.println("Enter the customer's name, or \"back\" to go back:\t");
+		System.out.println("Enter the customer's name:\t");
 		String name = ReadLine();
-		if(name.compareToIgnoreCase("back") == 0)
-		{
-			state = State.HOME;
-			return;
-		}
 		System.out.println("Enter the customer's phone number:\t");
 		String phone = ReadLine();
 		System.out.println("Enter the customer's address:\t");
@@ -197,7 +226,9 @@ public class Main {
 				"VALUES (\""+name+"\","+phone+",\""+address+"\",0) " +
 				"ON DUPLICATE KEY UPDATE `Name` = `Name`, `Phone Number` = `Phone Number`, `Address` = `Address`;";
 		conn.ExecuteNonQuery(sql);
-				
+		System.out.println("Customer added.  Press enter to continue to the home screen.");
+		ReadChar();
+		state = State.HOME;
 	}
 	
 	private static void EnterProductState()
@@ -318,7 +349,9 @@ public class Main {
 	
 	private static void EnterQuitState()
 	{
-		
+		ClearConsole();
+		System.out.println("Good bye.");
+		conn.CloseConnection();
 	}
 
 	private static char ReadChar()

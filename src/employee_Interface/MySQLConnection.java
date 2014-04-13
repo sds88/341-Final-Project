@@ -77,6 +77,37 @@ public class MySQLConnection {
 		}
 	}
 	
+	public String CreateOrderWithQuery(String sqlString)
+	{
+		String id = "";
+		if(conn == null)
+		{
+			System.err.println("Connection not yet established.");
+			return null;
+		}
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate(sqlString);
+			String getID = "SELECT `Order ID`" +
+					"FROM `Orders` " +
+					"ORDER BY `Order ID` DESC " +
+					"LIMIT 1;";
+			ResultSet rs = stmt.executeQuery(getID);
+			rs.next();
+			id = rs.getString(1);
+		} catch(SQLException e) {
+			System.out.println("SQLException: " + e.getMessage());
+		} finally {
+			if(stmt != null)
+			{
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
+				stmt = null;
+			}
+		}
+		return id;
+	}
 	private void PrintResultSet(ResultSet rs)
 	{
 		try {
