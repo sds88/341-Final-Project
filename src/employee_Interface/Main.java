@@ -11,7 +11,8 @@ public class Main {
 	public enum State {
 		HOME,
 		ORDER,
-		CUSTOMER,
+		CUSTOMER1,
+		CUSTOMER2,
 		PRODUCT,
 		INVENTORY,
 		QUIT;
@@ -39,8 +40,11 @@ public class Main {
 		case ORDER:
 			EnterOrderState();
 			break;
-		case CUSTOMER:
-			EnterCustomerState();
+		case CUSTOMER1:
+			EnterCustomerLookupState();
+			break;
+		case CUSTOMER2:
+			EnterCustomerAddState();
 			break;
 		case PRODUCT:
 			EnterProductState();
@@ -64,24 +68,28 @@ public class Main {
 		System.out.println("Welcome.  Please select an option from the following list:");
 		System.out.println("1.\tInput an order.");
 		System.out.println("2.\tLookup a customer.");
-		System.out.println("3.\tLookup a product.");
-		System.out.println("4.\tCheck inventory.");
-		System.out.println("5.\tQuit.");
+		System.out.println("3.\tAdd a customer.");
+		System.out.println("4.\tLookup a product.");
+		System.out.println("5.\tCheck inventory.");
+		System.out.println("6.\tQuit.");
 		char selection = ReadChar();
 		switch(selection) {
 		case '1':
 			state = State.ORDER;
 			break;
 		case '2':
-			state = State.CUSTOMER;
+			state = State.CUSTOMER1;
 			break;
 		case '3':
-			state = State.PRODUCT;
+			state = State.CUSTOMER2;
 			break;
 		case '4':
-			state = State.INVENTORY;
+			state = State.PRODUCT;
 			break;
 		case '5':
+			state = State.INVENTORY;
+			break;
+		case '6':
 			state = State.QUIT;
 			break;
 		default:
@@ -94,7 +102,7 @@ public class Main {
 		
 	}
 	
-	private static void EnterCustomerState()
+	private static void EnterCustomerLookupState()
 	{
 		ClearConsole();
 		System.out.println("Please select which parameter to search with:");
@@ -169,6 +177,27 @@ public class Main {
 	{
 		// Phone number constraints are the same as the customer id constraints so just check it with that
 		return IsValidCustomerID(number);
+	}
+	
+	private static void EnterCustomerAddState()
+	{
+		ClearConsole();
+		System.out.println("Enter the customer's name, or \"back\" to go back:\t");
+		String name = ReadLine();
+		if(name.compareToIgnoreCase("back") == 0)
+		{
+			state = State.HOME;
+			return;
+		}
+		System.out.println("Enter the customer's phone number:\t");
+		String phone = ReadLine();
+		System.out.println("Enter the customer's address:\t");
+		String address = ReadLine();
+		String sql = "INSERT INTO Customers (`Name`, `Phone Number`, `Address`, `Reward Points`)" +
+				"VALUES (\""+name+"\","+phone+",\""+address+"\",0) " +
+				"ON DUPLICATE KEY UPDATE `Name` = `Name`, `Phone Number` = `Phone Number`, `Address` = `Address`;";
+		conn.ExecuteNonQuery(sql);
+				
 	}
 	
 	private static void EnterProductState()
@@ -275,7 +304,16 @@ public class Main {
 	
 	private static void EnterInventoryState()
 	{
-		
+		ClearConsole();
+		System.out.println("Enter Store ID, or \"back\" to go back:\t");
+		String id = ReadLine();
+		if(id.compareToIgnoreCase("back") == 0)
+		{
+			state = State.HOME;
+			return;
+		}
+		String sql = "Select * From Inventory WHERE `Store ID` = "+id+";";
+		conn.ExecuteQuery(sql);
 	}
 	
 	private static void EnterQuitState()
