@@ -47,10 +47,10 @@ public class MySQLConnection {
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sqlString);
+			PrintResultSet(rs);
 		} catch(SQLException e) {
 			System.err.println("SQLException: " + e.getMessage());
 		}
-		PrintResultSet(rs);
 		return;
 	}
 	

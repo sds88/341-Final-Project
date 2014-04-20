@@ -15,6 +15,8 @@ public class Main {
 		STORE,
 		CUSTOMER,
 		PRODUCT,
+		NONQUERY,
+		QUERY,
 		QUIT;
 	}
 	
@@ -46,6 +48,12 @@ public class Main {
 		case PRODUCT:
 			EnterProductState();
 			break;
+		case NONQUERY:
+			EnterExecuteNonQueryState();
+			break;
+		case QUERY:
+			EnterExecuteQueryState();
+			break;
 		default:
 			System.err.println("Unknown state reached.");
 			break;
@@ -59,7 +67,9 @@ public class Main {
 		System.out.println("1.\tAdd a new store.");
 		System.out.println("2.\tAdd a new customer.");
 		System.out.println("3.\tAdd a new product.");
-		System.out.println("4.\tQuit.");
+		System.out.println("4.\tRun a data manipulation query.");
+		System.out.println("5.\tRun a data definition query");
+		System.out.println("6.\tQuit.");
 		char selection = ReadChar();
 		switch(selection) {
 		case '1':
@@ -72,6 +82,12 @@ public class Main {
 			state = State.PRODUCT;
 			break;
 		case '4':
+			state = State.NONQUERY;
+			break;
+		case '5':
+			state = State.QUERY;
+			break;
+		case '6':
 			state = State.QUIT;
 			break;
 		default:
@@ -135,9 +151,30 @@ public class Main {
 		String sql = "INSERT INTO Products (`UPC Code`, `Product Name`, `Brand`, `Categories`, `MSRP`, `Alcohol Percent`)" +
 				"VALUES ("+upc+", \""+name+"\", \""+brand+"\", \""+categories+"\", "+msrp+", "+percent+") " +
 				"ON DUPLICATE KEY UPDATE `UPC Code` = `UPC Code`, `Product Name` = `Product Name`, `Brand` = `Brand`, `Categories` = `Categories`, `MSRP` = `MSRP`, `Alcohol Percent` = `Alcohol Percent`;";
-		System.out.println(sql);
 		conn.ExecuteNonQuery(sql);
 		System.out.println("Product added.  Press enter to continue to the home screen.");
+		ReadChar();
+		state = State.HOME;
+	}
+	
+	private static void EnterExecuteNonQueryState()
+	{
+		ClearConsole();
+		System.out.println("Enter a data manipulation query (Insert, Update, Delete, etc.):\t");
+		String sql = ReadLine();
+		conn.ExecuteNonQuery(sql);
+		System.out.println("Press enter to continue to the home screen.");
+		ReadChar();
+		state = State.HOME;
+	}
+	
+	private static void EnterExecuteQueryState()
+	{
+		ClearConsole();
+		System.out.println("Enter a data definition query (SELECT, VIEWS, etc.):\t");
+		String sql = ReadLine();
+		conn.ExecuteQuery(sql);
+		System.out.println("Press enter to continue to the home screen.");
 		ReadChar();
 		state = State.HOME;
 	}
