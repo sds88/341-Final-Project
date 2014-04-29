@@ -5,10 +5,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
-import java.util.Calendar;
 import java.util.Date;
-
-import javax.print.attribute.standard.DateTimeAtCompleted;
 
 public class Main {
 	public static MySQLConnection conn;

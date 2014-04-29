@@ -17,6 +17,7 @@ public class Main {
 		PRODUCT,
 		NONQUERY,
 		QUERY,
+		ADVANCED,
 		QUIT;
 	}
 	
@@ -54,6 +55,9 @@ public class Main {
 		case QUERY:
 			EnterExecuteQueryState();
 			break;
+		case ADVANCED:
+			EnterAdvancedState();
+			break;
 		default:
 			System.err.println("Unknown state reached.");
 			break;
@@ -68,8 +72,9 @@ public class Main {
 		System.out.println("2.\tAdd a new customer.");
 		System.out.println("3.\tAdd a new product.");
 		System.out.println("4.\tRun a data manipulation query.");
-		System.out.println("5.\tRun a data definition query");
-		System.out.println("6.\tQuit.");
+		System.out.println("5.\tRun a data definition query.");
+		System.out.println("6.\tView advanced query options.");
+		System.out.println("7.\tQuit.");
 		char selection = ReadChar();
 		switch(selection) {
 		case '1':
@@ -88,6 +93,9 @@ public class Main {
 			state = State.QUERY;
 			break;
 		case '6':
+			state = State.ADVANCED;
+			break;
+		case '7':
 			state = State.QUIT;
 			break;
 		default:
@@ -179,6 +187,65 @@ public class Main {
 		state = State.HOME;
 	}
 	
+	private static void EnterAdvancedState()
+	{
+		ClearConsole();
+		System.out.println("Welcome.  Please select an option from the following list:");
+		System.out.println("1.\tView x customer's orders.");
+		System.out.println("2.\tView orders containing x product.");
+		System.out.println("3.\tView orders from store x.");
+		System.out.println("4.\tView top ten products from store x.");
+		System.out.println("5.\tBack.");
+		char selection = ReadChar();
+		if(selection == '5')
+		{
+			state = State.HOME;
+			return;
+		} 
+		else if(selection < '1' || selection > '5')
+		{
+			System.out.println("Invalid selection.");
+			return;
+		}
+		String sql, input;
+		switch(selection) {
+		case '1':
+			System.out.println("Enter customer id:\t");
+			input = ReadLine();
+			sql = "Select `Order ID`, `Product Name`, `Amount`, `Timestamp` " +
+					"From Orders left join Order_Content using(`Order ID`) left join Products using(`UPC Code`) " +
+					"Where `Customer ID` = "+input+";";
+			conn.ExecuteQuery(sql);
+			break;
+		case '2':
+			System.out.println("Enter product UPC:\t");
+			input = ReadLine();
+			sql = "Select `Order ID`, `Store ID`, `Customer ID`, `Amount`, `Timestamp` " +
+					"From Orders join Order_Content using(`Order ID`) join Products using(`UPC Code`) " +
+					"where `UPC Code` = "+input+";";
+			conn.ExecuteQuery(sql);
+			break;
+		case '3':
+			System.out.println("Enter store id:\t");
+			input = ReadLine();
+			sql = "Select `Order ID`, `Customer ID`, `Total Price`, `Timestamp` " +
+					"From Orders " +
+					"where `Store ID` = "+input+";";
+			conn.ExecuteQuery(sql);
+			break;
+		case '4':
+			System.out.println("Enter store id:\t");
+			input = ReadLine();
+			sql = "Select `Product Name`, Sum(`Amount`) as `Number Sold` " +
+					"From Orders join Order_Content using(`Order ID`) join Products using(`UPC Code`) " +
+					"Where `Store ID` = "+input+" " +
+					"Order By `Number Sold` DESC " +
+					//"Group By `UPC Code`" +
+					"Limit 0,10";
+			conn.ExecuteQuery(sql);
+			break;
+		}
+	}
 	private static char ReadChar()
 	{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
