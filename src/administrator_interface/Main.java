@@ -238,8 +238,8 @@ public class Main {
 			sql = "Select `Product Name`, Sum(`Amount`) as `Number Sold` " +
 					"From Orders join Order_Content using(`Order ID`) join Products using(`UPC Code`) " +
 					"Where `Store ID` = "+input+" " +
+					"Group By `UPC Code`" +
 					"Order By `Number Sold` DESC " +
-					//"Group By `UPC Code`" +
 					"Limit 0,10";
 			conn.ExecuteQuery(sql);
 			break;
